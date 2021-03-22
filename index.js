@@ -113,3 +113,67 @@ async function loadMainPrompts() {
       return quit();
   }
 }
+
+async function viewEmployees() {
+    const employees = await db.findAllEmployees();
+  
+    console.log("\n");
+    console.table(employees);
+  
+    loadMainPrompts();
+  }
+  
+  async function viewEmployeesByDepartment() {
+    const departments = await db.findAllDepartments();
+  
+    const departmentChoices = departments.map(({ id, name }) => ({
+      name: name,
+      value: id
+    }));
+  
+    const { departmentId } = await prompt([
+      {
+        type: "list",
+        name: "departmentId",
+        message: "Which department would you like to see employees for?",
+        choices: departmentChoices
+      }
+    ]);
+  
+    const employees = await db.findAllEmployeesByDepartment(departmentId);
+  
+    console.log("\n");
+    console.table(employees);
+  
+    loadMainPrompts();
+  }
+  
+  async function viewEmployeesByManager() {
+    const managers = await db.findAllEmployees();
+  
+    const managerChoices = managers.map(({ id, first_name, last_name }) => ({
+      name: `${first_name} ${last_name}`,
+      value: id
+    }));
+  
+    const { managerId } = await prompt([
+      {
+        type: "list",
+        name: "managerId",
+        message: "Which employee do you want to see direct reports for?",
+        choices: managerChoices
+      }
+    ]);
+  
+    const employees = await db.findAllEmployeesByManager(managerId);
+  
+    console.log("\n");
+  
+    if (employees.length === 0) {
+      console.log("The selected employee has no direct reports");
+    } else {
+      console.table(employees);
+    }
+  
+    loadMainPrompts();
+  }
