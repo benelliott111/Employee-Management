@@ -452,3 +452,4 @@ async function viewEmployees() {
   function quit() {
     console.log("Goodbye!");
     process.exit();
+  }
